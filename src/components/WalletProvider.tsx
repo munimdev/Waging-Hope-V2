@@ -5,7 +5,7 @@ import { mainnet } from "wagmi/chains";
 
 const config = getDefaultConfig({
   appName: "Salaam Shalom NFT",
-  projectId: "YOUR_WALLETCONNECT_PROJECT_ID", // Get from WalletConnect
+  projectId: "YOUR_PROJECT_ID", // Get from WalletConnect
   chains: [mainnet],
   transports: {
     [mainnet.id]: http(),
