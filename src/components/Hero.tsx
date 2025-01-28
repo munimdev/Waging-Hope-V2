@@ -34,66 +34,47 @@ export const Hero = () => {
       ref={ref}
       id="hero"
       style={{ opacity, scale, y }}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden py-20"
+      className="relative mt-10 overflow-hidden pt-20"
     >
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="mb-8"
           >
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-[#FFD700]">
-              Salaam Shalom
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-white text-center">
+              Imagine Salaam Shalom
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-4">
-              500 NFTs Celebrating Peace & Unity
+            <p className="text-white text-md max-w-2xl mx-auto text-justify">
+              Imagine Salaam/Shalom (“Peace” in Arabic/Hebrew) a ’la Yoko Ono’s
+              “Imagine Peace” is a Charity NFT Collection that draws on the
+              unique perspective of the Large Nature Model. In 500 unique
+              digital art pieces, each representing a single day since the 2023
+              Israel-Hamas War started, the project hallucinates imagined
+              possibilities when two male soldiers, one Israeli and one
+              Palestinian, are disarmed, stripped of their uniforms, and
+              subsequently transported to a utopian shared space. Removed from
+              their locals of Gaza, Tel Aviv, or Jerusalem, the men become
+              reacquainted in an underwater biblical Garden of Eden falling into
+              the depth of the Mediterranean Sea. Their human, sensual, intimate
+              lives are revealed and showcased with a generative AI model
+              dedicated to the natural world. As witnesses, we are invited to
+              Imagine Peace and Wage Hope.
             </p>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              A unique collection bridging communities through digital art, 
-              representing the shared hopes of Israeli and Palestinian soldiers 
-              for a peaceful future.
+            <br />
+            <p className="text-whhite text-md max-w-2xl mx-auto text-justify">
+              Imagine Salaam/Shalom benefits two non-profit organizations:
+              Parents Circle Families Forum (PCFF) and Physicians for Human
+              Rights (PHR). PCFF is a joint Israeli-Palestinian organization of
+              over 700 families, all of whom have lost an immediate family
+              member to the ongoing conflict. It focuses on the process of
+              reconciliation between nations as a prerequisite for achieving
+              sustainable peace. PHR works to promote principles of human
+              rights, medical ethics, and social justice for all people,
+              including the occupied Palestinian territory.
             </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex flex-col md:flex-row gap-4 justify-center items-center"
-          >
-            <Button
-              size="lg"
-              className="bg-[#FFD700] hover:bg-[#FFD700]/90 text-black font-bold px-8 shadow-lg shadow-[#FFD700]/20"
-            >
-              View Collection
-            </Button>
-            {/* <Button
-              size="lg"
-              variant="outline"
-              className="border-[#FFD700]/20 hover:bg-[#FFD700]/10"
-            >
-              Learn More
-            </Button> */}
-          </motion.div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="mt-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              className="flex flex-col items-center gap-2 text-gray-400"
-            >
-              <span className="text-sm">Scroll to explore</span>
-              <ArrowDown className="w-4 h-4" />
-            </motion.div>
           </motion.div>
         </div>
       </div>

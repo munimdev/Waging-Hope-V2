@@ -42,16 +42,8 @@ export const Collection = () => {
 
   return (
     <section id="collection" className="py-20">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">Collection</h2>
-          <p className="text-gray-300 mb-4">Discover our unique peace tokens</p>
-          <p className="text-sm text-gray-400">
-            {TOTAL_NFTS} unique NFTs celebrating peace and harmony
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      <div className="">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {displayedNFTs.map((nft, index) => (
             <motion.div
               key={nft.id}
@@ -64,29 +56,9 @@ export const Collection = () => {
               <div className="relative group">
                 <img
                   src={nft.image}
-                  alt={nft.name}
+                  alt={`#${nft.id}`}
                   className="w-full aspect-square object-cover rounded-lg mb-4 transition-transform duration-200 group-hover:shadow-lg"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-end justify-center pb-4">
-                  <p className="text-white text-sm font-medium">{nft.name}</p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold truncate">{nft.name}</h3>
-                <div className="flex justify-between items-center">
-                  <p className="text-gray-300">{nft.price}</p>
-                  <p className="text-xs text-gray-400">#{nft.id}</p>
-                </div>
-                <button
-                  onClick={() => handleMint(nft.id)}
-                  className={`w-full py-3 px-4 rounded-lg font-medium transition-colors duration-200 ${
-                    address 
-                      ? "bg-[#FFD700] hover:bg-[#FFD700]/90 text-black shadow-lg shadow-[#FFD700]/20" 
-                      : "bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
-                  }`}
-                >
-                  {address ? "Mint Now" : "Connect Wallet to Mint"}
-                </button>
               </div>
             </motion.div>
           ))}
@@ -139,7 +111,7 @@ export const Collection = () => {
                   size="sm"
                   onClick={() => handlePageChange(pageNumber)}
                   className={`min-w-[40px] ${
-                    currentPage === pageNumber ? "bg-[#FFD700] hover:bg-[#FFD700]/90 text-black" : ""
+                    currentPage === pageNumber ? "bg-white text-black" : ""
                   }`}
                 >
                   {pageNumber}
@@ -171,10 +143,6 @@ export const Collection = () => {
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
-        </div>
-
-        <div className="mt-4 text-center text-sm text-gray-400">
-          Showing {startIndex + 1}-{Math.min(startIndex + NFTS_PER_PAGE, TOTAL_NFTS)} of {TOTAL_NFTS} NFTs
         </div>
       </div>
     </section>

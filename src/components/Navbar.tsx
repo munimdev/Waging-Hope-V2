@@ -110,40 +110,23 @@ export const Navbar = () => {
             <a 
               href="#hero" 
               onClick={(e) => handleNavClick(e, "#hero")} 
-              className="text-2xl font-bold text-gradient"
+              className="text-2xl font-bold text-white"
             >
-              Salaam Shalom
+              Waging Hope | Imagine Salaam Shalom
             </a>
-            <div className="hidden md:flex space-x-6">
-              {navItems.map((item) => {
-                const isActive = activeSection === item.href.slice(1);
-                return (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    onClick={(e) => handleNavClick(e, item.href)}
-                    className={`relative px-4 py-2 rounded-lg transition-all duration-300 ${
-                      isActive 
-                        ? "bg-[#FFD700] text-black font-medium shadow-lg shadow-[#FFD700]/20" 
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    }`}
-                  >
-                    {item.label}
-                    {!isActive && (
-                      <span
-                        className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FFD700] opacity-0 transition-opacity duration-200 hover:opacity-100"
-                      />
-                    )}
-                  </a>
-                );
-              })}
-            </div>
           </motion.div>
 
           <div className="flex items-center space-x-4">
             <div className="transition-colors duration-300">
               <ConnectButton.Custom>
-                {({ account, chain, openConnectModal, mounted }) => {
+                {({
+                  account,
+                  chain,
+                  openAccountModal,
+                  openChainModal,
+                  openConnectModal,
+                  mounted,
+                }) => {
                   const ready = mounted;
                   const connected = ready && account && chain;
 
@@ -163,7 +146,7 @@ export const Navbar = () => {
                           return (
                             <button
                               onClick={openConnectModal}
-                              className="bg-[#FFD700] hover:bg-[#FFD700]/90 text-black font-bold py-2 px-6 rounded-lg transition-all duration-200 shadow-lg shadow-[#FFD700]/20"
+                              className="bg-white text-black font-bold py-2 px-6 rounded-lg transition-all duration-200 shadow-lg shadow-[#FFD700]/20"
                             >
                               Connect Wallet
                             </button>
@@ -171,8 +154,33 @@ export const Navbar = () => {
                         }
 
                         return (
-                          <div className="bg-[#FFD700]/10 backdrop-blur-sm border border-[#FFD700]/20 rounded-lg p-1">
-                            <ConnectButton />
+                          <div className="bg-[#FFD700]/10 backdrop-blur-sm border border-[#FFD700]/20 rounded-lg p-1 flex items-center gap-2">
+                            <button
+                              onClick={openChainModal}
+                              className="flex items-center gap-1 px-2 py-1 rounded hover:bg-[#FFD700]/5"
+                            >
+                              {chain.hasIcon && (
+                                <div className="w-5 h-5">
+                                  {chain.iconUrl && (
+                                    <img
+                                      alt={chain.name ?? "Chain icon"}
+                                      src={chain.iconUrl}
+                                      className="w-5 h-5"
+                                    />
+                                  )}
+                                </div>
+                              )}
+                              <span className="text-sm font-medium text-gray-200">
+                                {chain.name}
+                              </span>
+                            </button>
+
+                            <button
+                              onClick={openAccountModal}
+                              className="px-2 py-1 rounded hover:bg-[#FFD700]/5 text-sm font-medium text-gray-200"
+                            >
+                              {account.displayName}
+                            </button>
                           </div>
                         );
                       })()}
@@ -191,33 +199,6 @@ export const Navbar = () => {
             </Button>
           </div>
         </div>
-
-        {/* Mobile menu */}
-        <motion.div
-          initial={false}
-          animate={{ height: isMenuOpen ? "auto" : 0, opacity: isMenuOpen ? 1 : 0 }}
-          className="md:hidden overflow-hidden"
-        >
-          <div className="py-4 space-y-2">
-            {navItems.map((item) => {
-              const isActive = activeSection === item.href.slice(1);
-              return (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className={`block px-4 py-2 rounded-lg transition-all duration-300 ${
-                    isActive
-                      ? "bg-[#FFD700] text-black font-medium shadow-lg shadow-[#FFD700]/20"
-                      : "text-gray-300 hover:text-white hover:bg-white/10"
-                  }`}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-          </div>
-        </motion.div>
       </div>
     </motion.nav>
   );

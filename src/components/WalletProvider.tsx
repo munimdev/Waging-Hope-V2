@@ -1,11 +1,12 @@
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider, http } from "wagmi";
+import "@rainbow-me/rainbowkit/styles.css";
+import { darkTheme, getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { http, WagmiProvider } from "wagmi";
 import { mainnet } from "wagmi/chains";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 const config = getDefaultConfig({
-  appName: "Salaam Shalom NFT",
-  projectId: "YOUR_PROJECT_ID", // Get from WalletConnect
+  appName: "Salam Shalom",
+  projectId: "cd12f245bd6a6075580e043613be3a13", // Get from WalletConnect
   chains: [mainnet],
   transports: {
     [mainnet.id]: http(),
@@ -18,7 +19,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>{children}</RainbowKitProvider>
+        <RainbowKitProvider theme={darkTheme()}>{children}</RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
