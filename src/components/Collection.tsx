@@ -5,25 +5,28 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 
-// Generate 500 NFTs
-const TOTAL_NFTS = 500;
+interface CollectionProps {
+  totalNFTs: number;
+  basePath: string;
+}
+
 const NFTS_PER_PAGE = 12;
 
-const generateNFTs = () =>
-  Array.from({ length: TOTAL_NFTS }, (_, i) => ({
+const generateNFTs = (total: number, basePath: string) =>
+  Array.from({ length: total }, (_, i) => ({
     id: i + 1,
-    name: `Peace Token #${i + 1}`,
-    image: "https://via.placeholder.com/300",
+    name: `#${i + 1}`,
+    image: `${basePath}/${i + 1}.jpg`,
     price: "0.1 ETH",
   }));
 
-export const Collection = () => {
+export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const allNFTs = generateNFTs();
-  const totalPages = Math.ceil(TOTAL_NFTS / NFTS_PER_PAGE);
+  const allNFTs = generateNFTs(totalNFTs, basePath);
+  const totalPages = Math.ceil(totalNFTs / NFTS_PER_PAGE);
   const startIndex = (currentPage - 1) * NFTS_PER_PAGE;
   const displayedNFTs = allNFTs.slice(startIndex, startIndex + NFTS_PER_PAGE);
 
@@ -45,22 +48,23 @@ export const Collection = () => {
       <div className="">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {displayedNFTs.map((nft, index) => (
-            <motion.div
-              key={nft.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="glass-card p-4 hover:scale-[1.02] transition-transform duration-200"
-            >
+            // <motion.div
+            //   key={nft.id}
+            //   initial={{ opacity: 0, y: 20 }}
+            //   whileInView={{ opacity: 1, y: 0 }}
+            //   transition={{ duration: 0.5, delay: index * 0.1 }}
+            //   viewport={{ once: true }}
+            //   className="p-4 hover:scale-[1.02] transition-transform duration-200"
+            // >
               <div className="relative group">
                 <img
+                  key={nft.id}
                   src={nft.image}
                   alt={`#${nft.id}`}
                   className="w-full aspect-square object-cover rounded-lg mb-4 transition-transform duration-200 group-hover:shadow-lg"
                 />
               </div>
-            </motion.div>
+            // </motion.div>
           ))}
         </div>
 

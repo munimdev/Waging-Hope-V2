@@ -3,7 +3,12 @@ import { Button } from "./ui/button";
 import { useRef } from "react";
 import { ArrowDown } from "lucide-react";
 
-export const Hero = () => {
+interface HeroProps {
+  title: string;
+  description: string;
+}
+
+export const Hero = ({ title, description }: HeroProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -45,23 +50,10 @@ export const Hero = () => {
             className="mb-8"
           >
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-white text-center">
-              Imagine Salaam Shalom
+              {title}
             </h1>
             <p className="text-white text-md max-w-2xl mx-auto text-justify">
-              Imagine Salaam/Shalom (“Peace” in Arabic/Hebrew) a ’la Yoko Ono’s
-              “Imagine Peace” is a Charity NFT Collection that draws on the
-              unique perspective of the Large Nature Model. In 500 unique
-              digital art pieces, each representing a single day since the 2023
-              Israel-Hamas War started, the project hallucinates imagined
-              possibilities when two male soldiers, one Israeli and one
-              Palestinian, are disarmed, stripped of their uniforms, and
-              subsequently transported to a utopian shared space. Removed from
-              their locals of Gaza, Tel Aviv, or Jerusalem, the men become
-              reacquainted in an underwater biblical Garden of Eden falling into
-              the depth of the Mediterranean Sea. Their human, sensual, intimate
-              lives are revealed and showcased with a generative AI model
-              dedicated to the natural world. As witnesses, we are invited to
-              Imagine Peace and Wage Hope.
+              {description}
             </p>
             <br />
             <p className="text-whhite text-md max-w-2xl mx-auto text-justify">
