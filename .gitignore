@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-public/shalom
-public/phoenix
-public/highlight
+# public/shalom
+# public/phoenix
+# public/highlight
 public/*.py
