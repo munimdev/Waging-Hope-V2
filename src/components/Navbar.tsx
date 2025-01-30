@@ -15,7 +15,7 @@ export const Navbar = ({ collection }: { collection: string }) => {
 
   useEffect(() => {
     if (collection === "shalom") {
-      setHeaderName("Imagine Salaam Shalom");
+      setHeaderName("Imagine Salaam/Shalom");
     } else if (collection === "phoenix") {
       setHeaderName("LA Phoenix");
     }
@@ -117,18 +117,18 @@ export const Navbar = ({ collection }: { collection: string }) => {
             transition={{ delay: 0.2 }}
             className="flex items-center space-x-8"
           >
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-4">
               <Link 
                 to="/"
-                className="text-2xl font-bold text-white"
+                className="text-2xl text-white"
               >
                 Waging Hope
               </Link>
-              <span className="text-2xl font-bold text-white">|</span>
+              <span className="text-2xl text-white">|</span>
               <a 
                 href="#hero" 
                 onClick={(e) => handleNavClick(e, "#hero")} 
-                className="text-2xl font-bold text-white transition-colors"
+                className="text-xl text-white transition-colors"
               >
                 {headerName}
               </a>

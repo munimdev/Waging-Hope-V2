@@ -1,14 +1,23 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { useAccount } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
+import { createPublicClient, formatEther, parseEther, http } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "./ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { toast } from "sonner";
+import { nftContract, publicClient, transportUrl } from "@/config";
+import { activeChain } from "@/config";
+import { mint } from "viem/chains";
+import { simulateContract } from "viem/actions";
 
 interface CollectionProps {
   totalNFTs: number;
@@ -25,25 +34,34 @@ const generateNFTs = (total: number, basePath: string) =>
     price: "0.03 ETH",
   }));
 
+const nftAddress = {
+  shalom: "0x0000000000000000000000000000000000000000",
+  phoenix: "0x0000000000000000000000000000000000000000",
+} as const;
+
+const nftABI = [
+  {
+    name: "mint",
+    type: "function",
+    stateMutability: "payable",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [],
+  },
+] as const;
+
 export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
-  const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedNFT, setSelectedNFT] = useState<number | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const { data: hash, error, writeContractAsync } = useWriteContract();
+  const { address, isConnected } = useAccount();
 
   const allNFTs = generateNFTs(totalNFTs, basePath);
   const totalPages = Math.ceil(totalNFTs / NFTS_PER_PAGE);
   const startIndex = (currentPage - 1) * NFTS_PER_PAGE;
   const displayedNFTs = allNFTs.slice(startIndex, startIndex + NFTS_PER_PAGE);
-
-  const handleMint = (id: number) => {
-    if (!address) {
-      openConnectModal?.();
-      return;
-    }
-    // Implement minting logic here
-    console.log("Minting NFT:", id);
-  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -61,16 +79,56 @@ export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
     }
   };
 
+  const handleConnectOrMint = useCallback(
+    async (id: number) => {
+      if (!address) {
+        setIsDialogOpen(false);
+        setTimeout(() => {
+          openConnectModal?.();
+        }, 100);
+        return;
+      }
+
+      try {
+        const request = {
+          ...nftContract,
+          functionName: "buyNFT",
+          args: [BigInt(id), true] as const,
+          value: parseEther("0.03"),
+          chain: activeChain,
+          account: address,
+        } as const;
+
+        await writeContractAsync(request);
+        toast.success("NFT minted successfully!");
+      } catch (error) {
+        console.error("Minting failed:", error);
+        toast.error("Failed to mint NFT");
+      }
+    },
+    [address, openConnectModal, setIsDialogOpen, writeContractAsync]
+  );
+
   return (
     <section id="collection" className="py-20">
       <div className="">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {displayedNFTs.map((nft) => (
-            <Dialog key={nft.id}>
+            <Dialog
+              key={nft.id}
+              open={selectedNFT === nft.id && isDialogOpen}
+              onOpenChange={(open) => {
+                setIsDialogOpen(open);
+                if (!open) setSelectedNFT(null);
+              }}
+            >
               <DialogTrigger asChild>
-                <div 
+                <div
                   className="relative group cursor-pointer"
-                  onClick={() => setSelectedNFT(nft.id)}
+                  onClick={() => {
+                    setSelectedNFT(nft.id);
+                    setIsDialogOpen(true);
+                  }}
                 >
                   <img
                     src={nft.image}
@@ -79,6 +137,11 @@ export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
                   />
                 </div>
               </DialogTrigger>
+              <VisuallyHidden>
+                <DialogTitle>
+                  <span className="text-lg font-semibold">#{nft.id}</span>
+                </DialogTitle>
+              </VisuallyHidden>
               <DialogContent className="max-w-[95vw] h-[95vh] p-0 overflow-hidden">
                 <div className="relative h-full flex flex-col">
                   {/* Navigation buttons */}
@@ -114,9 +177,11 @@ export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
 
                   {/* Bottom bar */}
                   <div className="w-full bg-background p-4 border-t flex items-center justify-between">
-                    <span className="text-lg font-semibold">#{selectedNFT}</span>
+                    <span className="text-lg font-semibold">
+                      #{selectedNFT}
+                    </span>
                     <Button
-                      onClick={() => handleMint(selectedNFT || nft.id)}
+                      onClick={() => handleConnectOrMint(selectedNFT || nft.id)}
                       className="px-8"
                     >
                       {!address ? "Connect Wallet" : `Mint for ${nft.price}`}

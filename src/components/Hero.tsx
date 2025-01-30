@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown';
 
 // Hardcode the title and description for each collection
 const titles = {
-  shalom: "Imagine Salaam Shalom",
+  shalom: "Imagine Salaam/Shalom",
   phoenix: "LA Phoenix",
 };
 

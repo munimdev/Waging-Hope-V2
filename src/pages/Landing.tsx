@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 const Landing = () => {
   const collections = [
     {
-      title: "Imagine Salaam Shalom",
-      image: "/highlight/shalom.jpeg",
+      title: "Imagine Salaam/Shalom",
+      image: "/highlight/phoenix.jpeg",
       path: "/shalom",
     },
     {
       title: "LA Phoenix",
-      image: "/highlight/phoenix.jpeg",
+      image: "/highlight/shalom.jpeg",
       path: "/phoenix",
     },
   ];
