@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./components/WalletProvider";
 import Landing from "./pages/Landing";
-import Index from "./pages/Index";
+import Index from "./pages/Shalom";
 import Phoenix from "./pages/Phoenix";
 
 const App = () => (

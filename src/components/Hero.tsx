@@ -1,14 +1,29 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "./ui/button";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { ArrowDown } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 
-interface HeroProps {
-  title: string;
-  description: string;
-}
+// Hardcode the title and description for each collection
+const titles = {
+  shalom: "Imagine Salaam Shalom",
+  phoenix: "LA Phoenix",
+};
 
-export const Hero = ({ title, description }: HeroProps) => {
+const descriptions = {
+  shalom: `
+**Imagine Salaam/Shalom** (“Peace” in Arabic/Hebrew a ’la Yoko Ono’s “Imagine Peace”) is a Charity NFT Collection that draws on the unique perspective of the Live Encyclopedia: Large Nature Model. In 500 unique digital pieces, the project hallucinates imagined possibilities when two male soldiers, one Israeli and one Palestinian, are disarmed, stripped of their uniforms, and subsequently transported to a utopian shared space. Removed from their locals of Gaza, Tel Aviv, or Jerusalem, the men become reacquainted in an underwater biblical Garden of Eden falling into the depth of the Mediterranean Sea. Their human, sensual, intimate lives are revealed and showcased with a generative AI model dedicated to the natural world. As witnesses, we are invited to Imagine Peace and Wage Hope.  
+
+Imagine Salaam/Shalom benefits two non-profit organizations: Parents Circle Families Forum ([PCFF](https://www.theparentscircle.org/en/about_eng-2/)) and Doctors Without Borders/Médecins Sans Frontières ([MSF](https://www.doctorswithoutborders.org/msf-operations-gaza)). PCFF is a joint Israeli-Palestinian organization of over 700 families, all of whom have lost an immediate family member to the ongoing conflict. It focuses on the process of reconciliation between nations as a prerequisite for achieving sustainable peace. MSF staff has been working in Gaza’s hospitals and clinics throughout the war, with teams also providing logistic and medical equipment. 
+`,
+  phoenix: `
+**LA Phoenix** is a Charity NFT Collection comprised of 800 unique digital artworks. Utilizing the Live Encyclopedia, the project imagines via the generative AI Large Nature Model a futuristic bio-sustainable Los Angeles. Voyaging from the Hollywood Sign to Griffith Observatory, from Santa Monica Pier to DTLA, we witness the harmony and love of the diverse Angelino community, who create their own unique utopia in a climate-safe environment.
+
+LA Phoenix benefits the LA Arts Community Fire Relief [Fund](https://www.getty.edu/about/development/LAArtsReliefFund2025.html) and the Refik Anadol Studios Web3 [Fund](https://refikanadol.com/). Both initiatives provide urgent support to artists and art workers in Los Angeles who have lost homes, studios, and/or livelihood due to the devastating fires.
+`
+};
+
+export const Hero = ({ collection }: { collection: string }) => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -50,23 +65,36 @@ export const Hero = ({ title, description }: HeroProps) => {
             className="mb-8"
           >
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-white text-center">
-              {title}
+              {titles[collection]}
             </h1>
-            <p className="text-white text-md max-w-2xl mx-auto text-justify">
-              {description}
-            </p>
-            <br />
-            <p className="text-whhite text-md max-w-2xl mx-auto text-justify">
-              Imagine Salaam/Shalom benefits two non-profit organizations:
-              Parents Circle Families Forum (PCFF) and Physicians for Human
-              Rights (PHR). PCFF is a joint Israeli-Palestinian organization of
-              over 700 families, all of whom have lost an immediate family
-              member to the ongoing conflict. It focuses on the process of
-              reconciliation between nations as a prerequisite for achieving
-              sustainable peace. PHR works to promote principles of human
-              rights, medical ethics, and social justice for all people,
-              including the occupied Palestinian territory.
-            </p>
+            <div className="prose prose-invert max-w-2xl mx-auto">
+              <ReactMarkdown
+                components={{
+                  p: ({ children }) => (
+                    <p className="text-white text-md text-justify mb-4">
+                      {children}
+                    </p>
+                  ),
+                  a: ({ href, children }) => (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      {children}
+                    </a>
+                  ),
+                  strong: ({ children }) => (
+                    <strong className="font-bold">
+                      {children}
+                    </strong>
+                  ),
+                }}
+              >
+                {descriptions[collection]}
+              </ReactMarkdown>
+            </div>
           </motion.div>
         </div>
       </div>

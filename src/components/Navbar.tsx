@@ -4,12 +4,22 @@ import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import { Link } from "react-router-dom";
 
-export const Navbar = () => {
+export const Navbar = ({ collection }: { collection: string }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const { isConnected } = useAccount();
+  const [headerName, setHeaderName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (collection === "shalom") {
+      setHeaderName("Imagine Salaam Shalom");
+    } else if (collection === "phoenix") {
+      setHeaderName("LA Phoenix");
+    }
+  }, [collection]);
 
   useEffect(() => {
     // Handle navbar background on scroll
@@ -107,13 +117,22 @@ export const Navbar = () => {
             transition={{ delay: 0.2 }}
             className="flex items-center space-x-8"
           >
-            <a 
-              href="#hero" 
-              onClick={(e) => handleNavClick(e, "#hero")} 
-              className="text-2xl font-bold text-white"
-            >
-              Waging Hope | Imagine Salaam Shalom
-            </a>
+            <div className="flex items-center space-x-2">
+              <Link 
+                to="/"
+                className="text-2xl font-bold text-white"
+              >
+                Waging Hope
+              </Link>
+              <span className="text-2xl font-bold text-white">|</span>
+              <a 
+                href="#hero" 
+                onClick={(e) => handleNavClick(e, "#hero")} 
+                className="text-2xl font-bold text-white hover:text-yellow-400 transition-colors"
+              >
+                {headerName}
+              </a>
+            </div>
           </motion.div>
 
           <div className="flex items-center space-x-4">
