@@ -128,7 +128,7 @@ export const Navbar = ({ collection }: { collection: string }) => {
               <a 
                 href="#hero" 
                 onClick={(e) => handleNavClick(e, "#hero")} 
-                className="text-2xl font-bold text-white hover:text-yellow-400 transition-colors"
+                className="text-2xl font-bold text-white transition-colors"
               >
                 {headerName}
               </a>

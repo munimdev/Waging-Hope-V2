@@ -4,6 +4,11 @@ import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "./ui/dialog";
 
 interface CollectionProps {
   totalNFTs: number;
@@ -17,13 +22,14 @@ const generateNFTs = (total: number, basePath: string) =>
     id: i + 1,
     name: `#${i + 1}`,
     image: `${basePath}/${i + 1}.jpg`,
-    price: "0.1 ETH",
+    price: "0.03 ETH",
   }));
 
 export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedNFT, setSelectedNFT] = useState<number | null>(null);
 
   const allNFTs = generateNFTs(totalNFTs, basePath);
   const totalPages = Math.ceil(totalNFTs / NFTS_PER_PAGE);
@@ -43,28 +49,83 @@ export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
     setCurrentPage(page);
   };
 
+  const handlePrevNFT = () => {
+    if (selectedNFT && selectedNFT > 1) {
+      setSelectedNFT(selectedNFT - 1);
+    }
+  };
+
+  const handleNextNFT = () => {
+    if (selectedNFT && selectedNFT < totalNFTs) {
+      setSelectedNFT(selectedNFT + 1);
+    }
+  };
+
   return (
     <section id="collection" className="py-20">
       <div className="">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {displayedNFTs.map((nft, index) => (
-            // <motion.div
-            //   key={nft.id}
-            //   initial={{ opacity: 0, y: 20 }}
-            //   whileInView={{ opacity: 1, y: 0 }}
-            //   transition={{ duration: 0.5, delay: index * 0.1 }}
-            //   viewport={{ once: true }}
-            //   className="p-4 hover:scale-[1.02] transition-transform duration-200"
-            // >
-              <div className="relative group">
-                <img
-                  key={nft.id}
-                  src={nft.image}
-                  alt={`#${nft.id}`}
-                  className="w-full aspect-square object-cover rounded-lg mb-4 transition-transform duration-200 group-hover:shadow-lg"
-                />
-              </div>
-            // </motion.div>
+          {displayedNFTs.map((nft) => (
+            <Dialog key={nft.id}>
+              <DialogTrigger asChild>
+                <div 
+                  className="relative group cursor-pointer"
+                  onClick={() => setSelectedNFT(nft.id)}
+                >
+                  <img
+                    src={nft.image}
+                    alt={`#${nft.id}`}
+                    className="w-full aspect-square object-cover rounded-lg mb-4 transition-transform duration-200 group-hover:shadow-lg"
+                  />
+                </div>
+              </DialogTrigger>
+              <DialogContent className="max-w-[95vw] h-[95vh] p-0 overflow-hidden">
+                <div className="relative h-full flex flex-col">
+                  {/* Navigation buttons */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePrevNFT();
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full z-10"
+                    disabled={selectedNFT === 1}
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNextNFT();
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full z-10"
+                    disabled={selectedNFT === totalNFTs}
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+
+                  {/* Main image */}
+                  <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
+                    <img
+                      src={`${basePath}/${selectedNFT}.jpg`}
+                      alt={`#${selectedNFT}`}
+                      className="max-h-[calc(95vh-100px)] w-auto object-contain"
+                    />
+                  </div>
+
+                  {/* Bottom bar */}
+                  <div className="w-full bg-background p-4 border-t flex items-center justify-between">
+                    <span className="text-lg font-semibold">#{selectedNFT}</span>
+                    <Button
+                      onClick={() => handleMint(selectedNFT || nft.id)}
+                      className="px-8"
+                    >
+                      {!address ? "Connect Wallet" : `Mint for ${nft.price}`}
+                    </Button>
+                    <div className="w-[100px]" /> {/* Spacer for alignment */}
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           ))}
         </div>
 
@@ -78,7 +139,7 @@ export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          
+
           <div className="flex items-center space-x-2">
             {/* Always show first page */}
             {currentPage > 3 && (
@@ -126,7 +187,9 @@ export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
             {/* Always show last page */}
             {currentPage < totalPages - 2 && (
               <>
-                {currentPage < totalPages - 3 && <span className="text-gray-400">...</span>}
+                {currentPage < totalPages - 3 && (
+                  <span className="text-gray-400">...</span>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
