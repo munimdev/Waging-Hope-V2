@@ -14,9 +14,9 @@ export const Navbar = ({ collection }: { collection: string }) => {
   const [headerName, setHeaderName] = useState<string | null>(null);
 
   useEffect(() => {
-    if (collection === "shalom") {
+    if (collection === "imagine") {
       setHeaderName("Imagine Salaam/Shalom");
-    } else if (collection === "phoenix") {
+    } else if (collection === "la") {
       setHeaderName("LA Phoenix");
     }
   }, [collection]);

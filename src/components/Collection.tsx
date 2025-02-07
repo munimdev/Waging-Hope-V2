@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAccount, useWriteContract } from "wagmi";
 import { createPublicClient, formatEther, parseEther, http } from "viem";
@@ -22,9 +22,11 @@ import { simulateContract } from "viem/actions";
 interface CollectionProps {
   totalNFTs: number;
   basePath: string;
+  onPageChange?: (page: number) => void;
 }
 
-const NFTS_PER_PAGE = 20;
+const FIRST_PAGE_ITEMS = 15;
+const OTHER_PAGES_ITEMS = 20;
 
 const generateNFTs = (total: number, basePath: string) =>
   Array.from({ length: total }, (_, i) => ({
@@ -49,7 +51,7 @@ const nftABI = [
   },
 ] as const;
 
-export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
+export const Collection = ({ totalNFTs, basePath, onPageChange }: CollectionProps) => {
   const { openConnectModal } = useConnectModal();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedNFT, setSelectedNFT] = useState<number | null>(null);
@@ -59,25 +61,78 @@ export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
   const { address, isConnected } = useAccount();
 
   const allNFTs = generateNFTs(totalNFTs, basePath);
-  const totalPages = Math.ceil(totalNFTs / NFTS_PER_PAGE);
-  const startIndex = (currentPage - 1) * NFTS_PER_PAGE;
-  const displayedNFTs = allNFTs.slice(startIndex, startIndex + NFTS_PER_PAGE);
+  
+  // Calculate total pages based on different items per page
+  const remainingNFTs = totalNFTs - FIRST_PAGE_ITEMS;
+  const additionalPages = Math.ceil(remainingNFTs / OTHER_PAGES_ITEMS);
+  const totalPages = 1 + additionalPages;
+
+  // Calculate start and end indices based on current page
+  const getPageIndices = (page: number) => {
+    if (page === 1) {
+      return {
+        start: 0,
+        end: FIRST_PAGE_ITEMS,
+      };
+    } else {
+      const itemsAfterFirstPage = (page - 2) * OTHER_PAGES_ITEMS + FIRST_PAGE_ITEMS;
+      return {
+        start: itemsAfterFirstPage,
+        end: Math.min(itemsAfterFirstPage + OTHER_PAGES_ITEMS, totalNFTs),
+      };
+    }
+  };
+
+  const { start, end } = getPageIndices(currentPage);
+  const displayedNFTs = allNFTs.slice(start, end);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    onPageChange?.(page);
+    // Scroll to the collection section
+    const collectionElement = document.getElementById('collection');
+    if (collectionElement) {
+      collectionElement.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
-  const handlePrevNFT = () => {
+  const handlePrevNFT = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     if (selectedNFT && selectedNFT > 1) {
       setSelectedNFT(selectedNFT - 1);
+      // If we're at the start of the current page, go to previous page
+      if (selectedNFT === start + 1 && currentPage > 1) {
+        handlePageChange(currentPage - 1);
+      }
     }
   };
 
-  const handleNextNFT = () => {
+  const handleNextNFT = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     if (selectedNFT && selectedNFT < totalNFTs) {
       setSelectedNFT(selectedNFT + 1);
+      // If we're at the end of the current page, go to next page
+      if (selectedNFT === end && currentPage < totalPages) {
+        handlePageChange(currentPage + 1);
+      }
     }
   };
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (isDialogOpen) {
+      if (e.key === 'ArrowLeft') {
+        handlePrevNFT();
+      } else if (e.key === 'ArrowRight') {
+        handleNextNFT();
+      }
+    }
+  }, [isDialogOpen, selectedNFT]);
+
+  // Add keyboard navigation
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   const handleConnectOrMint = useCallback(
     async (id: number) => {
@@ -146,22 +201,18 @@ export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
                 <div className="relative h-full flex flex-col">
                   {/* Navigation buttons */}
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePrevNFT();
-                    }}
+                    onClick={handlePrevNFT}
                     className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full z-10"
                     disabled={selectedNFT === 1}
+                    hidden={selectedNFT === 1}
                   >
                     <ChevronLeft className="h-6 w-6" />
                   </button>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleNextNFT();
-                    }}
+                    onClick={handleNextNFT}
                     className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full z-10"
                     disabled={selectedNFT === totalNFTs}
+                    hidden={selectedNFT === totalNFTs}
                   >
                     <ChevronRight className="h-6 w-6" />
                   </button>
