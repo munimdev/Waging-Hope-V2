@@ -6,21 +6,17 @@ import ReactMarkdown from 'react-markdown';
 
 // Hardcode the title and description for each collection
 const titles = {
-  shalom: "Imagine Salaam/Shalom",
-  phoenix: "LA Phoenix",
+  imagine: "Imagine Salaam/Shalom",
+  la: "LA Phoenix",
 };
 
 const descriptions = {
-  shalom: `
-**Imagine Salaam/Shalom** (“Peace” in Arabic/Hebrew a ’la Yoko Ono’s “Imagine Peace”) is a Charity NFT Collection that draws on the unique perspective of the Live Encyclopedia: Large Nature Model. In 500 unique digital pieces, the project hallucinates imagined possibilities when two male soldiers, one Israeli and one Palestinian, are disarmed, stripped of their uniforms, and subsequently transported to a utopian shared space. Removed from their locals of Gaza, Tel Aviv, or Jerusalem, the men become reacquainted in an underwater biblical Garden of Eden falling into the depth of the Mediterranean Sea. Their human, sensual, intimate lives are revealed and showcased with a generative AI model dedicated to the natural world. As witnesses, we are invited to Imagine Peace and Wage Hope.  
+  imagine: `
+**Imagine Salaam/Shalom** ("Peace" in Arabic/Hebrew a 'la Yoko Ono's "Imagine Peace") is a Charity NFT Collection that draws on the unique perspective of the [Live Encyclopedia: Large Nature Model](https://dataland.art/about/large-nature-model). In 500 unique digital pieces, the project hallucinates imagined possibilities when two male soldiers, one Israeli and one Palestinian, are disarmed, stripped of their uniforms, and subsequently transported to a utopian shared space. Removed from their locals of Gaza, Tel Aviv, or Jerusalem, the men become reacquainted in an underwater biblical Garden of Eden falling into the depth of the Mediterranean Sea. Their human, sensual, and intimate lives are revealed and showcased with a generative AI model dedicated to the natural world. As witnesses, we are invited to Imagine Peace and Wage Hope.`,
+  la: `
+**LA Phoenix** is a Charity NFT Collection comprised of 800 unique digital artworks. Utilizing the [Live Encyclopedia: Large Nature Model](https://dataland.art/about/large-nature-model), the project imagines via the generative AI Large Nature Model a futuristic bio-sustainable Los Angeles. Voyaging from the Hollywood Sign to Griffith Observatory, from Santa Monica Pier to DTLA, we witness the harmony and love of the diverse Angelino community, who create their own unique utopia in a climate-safe environment.
 
-Imagine Salaam/Shalom benefits two non-profit organizations: Parents Circle Families Forum ([PCFF](https://www.theparentscircle.org/en/about_eng-2/)) and Doctors Without Borders/Médecins Sans Frontières ([MSF](https://www.doctorswithoutborders.org/msf-operations-gaza)). PCFF is a joint Israeli-Palestinian organization of over 700 families, all of whom have lost an immediate family member to the ongoing conflict. It focuses on the process of reconciliation between nations as a prerequisite for achieving sustainable peace. MSF staff has been working in Gaza’s hospitals and clinics throughout the war, with teams also providing logistic and medical equipment. 
-`,
-  phoenix: `
-**LA Phoenix** is a Charity NFT Collection comprised of 800 unique digital artworks. Utilizing the Live Encyclopedia, the project imagines via the generative AI Large Nature Model a futuristic bio-sustainable Los Angeles. Voyaging from the Hollywood Sign to Griffith Observatory, from Santa Monica Pier to DTLA, we witness the harmony and love of the diverse Angelino community, who create their own unique utopia in a climate-safe environment.
-
-LA Phoenix benefits the LA Arts Community Fire Relief [Fund](https://www.getty.edu/about/development/LAArtsReliefFund2025.html) and the Refik Anadol Studios Web3 [Fund](https://refikanadol.com/). Both initiatives provide urgent support to artists and art workers in Los Angeles who have lost homes, studios, and/or livelihood due to the devastating fires.
-`
+LA Phoenix benefits the LA Arts Community Fire Relief [Fund](https://www.getty.edu/about/development/LAArtsReliefFund2025.html) and the Refik Anadol Studios Web3 [Fund](https://refikanadol.com/). Both initiatives provide urgent support to artists and art workers in Los Angeles who have lost homes, studios, and/or livelihood due to the devastating January 2025 fires.`
 };
 
 export const Hero = ({ collection }: { collection: string }) => {
@@ -57,7 +53,7 @@ export const Hero = ({ collection }: { collection: string }) => {
       className="relative mt-10 overflow-hidden pt-20"
     >
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -67,11 +63,11 @@ export const Hero = ({ collection }: { collection: string }) => {
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-white text-center">
               {titles[collection]}
             </h1>
-            <div className="prose prose-invert max-w-2xl mx-auto">
+            <div className="prose prose-invert max-w-4xl mx-auto">
               <ReactMarkdown
                 components={{
                   p: ({ children }) => (
-                    <p className="text-white text-md text-justify mb-4">
+                    <p className="text-white text-lg text-justify mb-6">
                       {children}
                     </p>
                   ),
@@ -80,7 +76,7 @@ export const Hero = ({ collection }: { collection: string }) => {
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline"
+                      className="underline text-blue-400 hover:text-blue-300"
                     >
                       {children}
                     </a>

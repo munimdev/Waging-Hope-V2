@@ -6,18 +6,19 @@ const Landing = () => {
     {
       title: "Imagine Salaam/Shalom",
       image: "/highlight/phoenix.jpeg",
-      path: "/shalom",
+      path: "/imagine",
     },
     {
       title: "LA Phoenix",
       image: "/highlight/shalom.jpeg",
-      path: "/phoenix",
+      path: "/la",
     },
   ];
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
       <div className="container mx-auto px-4">
+        <h1 className="text-4xl md:text-5xl font-bold text-white text-center mb-12">Waging Hope Collective</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {collections.map((collection) => (
             <motion.div
@@ -32,7 +33,7 @@ const Landing = () => {
                   <img
                     src={collection.image}
                     alt={collection.title}
-                    className="w-full aspect-[16/9] object-cover transition-transform duration-300 group-hover:scale-110"
+                    className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                     <h2 className="text-3xl md:text-4xl font-bold text-white">

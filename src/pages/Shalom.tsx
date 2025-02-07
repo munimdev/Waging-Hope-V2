@@ -2,19 +2,19 @@ import { Hero } from "@/components/Hero";
 import { Collection } from "@/components/Collection";
 import { Navbar } from "@/components/Navbar";
 
-const Shalom = () => {
+const Imagine = () => {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <Navbar collection="shalom" />
+      <Navbar collection="imagine" />
       <Hero 
-        collection="shalom"
+        collection="imagine"
       />
       <Collection 
         totalNFTs={500}
-        basePath="/shalom"
+        basePath="/imagine"
       />
     </main>
   );
 };
 
-export default Shalom;
+export default Imagine;

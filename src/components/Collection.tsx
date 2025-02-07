@@ -24,7 +24,7 @@ interface CollectionProps {
   basePath: string;
 }
 
-const NFTS_PER_PAGE = 12;
+const NFTS_PER_PAGE = 20;
 
 const generateNFTs = (total: number, basePath: string) =>
   Array.from({ length: total }, (_, i) => ({
@@ -112,7 +112,7 @@ export const Collection = ({ totalNFTs, basePath }: CollectionProps) => {
   return (
     <section id="collection" className="py-20">
       <div className="">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {displayedNFTs.map((nft) => (
             <Dialog
               key={nft.id}

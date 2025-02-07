@@ -2,20 +2,19 @@ import { Hero } from "@/components/Hero";
 import { Collection } from "@/components/Collection";
 import { Navbar } from "@/components/Navbar";
 
-const Phoenix = () => {
+const LA = () => {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <Navbar collection="phoenix" />
+      <Navbar collection="la" />
       <Hero 
-        collection="phoenix"
+        collection="la"
       />
       <Collection 
         totalNFTs={800}
-        basePath="/phoenix"
-        // collectionName="phoenix"
+        basePath="/la"
       />
     </main>
   );
 };
 
-export default Phoenix; 
+export default LA; 
