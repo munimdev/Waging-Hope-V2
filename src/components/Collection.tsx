@@ -5,6 +5,7 @@ import { createPublicClient, formatEther, parseEther, http } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,7 @@ interface CollectionProps {
   totalNFTs: number;
   basePath: string;
   onPageChange?: (page: number) => void;
+  onError?: (error: string | null) => void;
 }
 
 const FIRST_PAGE_ITEMS = 15;
@@ -51,14 +53,20 @@ const nftABI = [
   },
 ] as const;
 
-export const Collection = ({ totalNFTs, basePath, onPageChange }: CollectionProps) => {
+export const Collection = ({ totalNFTs, basePath, onPageChange, onError }: CollectionProps) => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { openConnectModal } = useConnectModal();
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedNFT, setSelectedNFT] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const { data: hash, error, writeContractAsync } = useWriteContract();
+  const { data: hash, error: mintError, writeContractAsync } = useWriteContract();
   const { address, isConnected } = useAccount();
+
+  // Get page from URL or default to 1
+  const urlPage = parseInt(searchParams.get("page") || "1");
+  const [currentPage, setCurrentPage] = useState(urlPage);
 
   const allNFTs = generateNFTs(totalNFTs, basePath);
   
@@ -66,6 +74,21 @@ export const Collection = ({ totalNFTs, basePath, onPageChange }: CollectionProp
   const remainingNFTs = totalNFTs - FIRST_PAGE_ITEMS;
   const additionalPages = Math.ceil(remainingNFTs / OTHER_PAGES_ITEMS);
   const totalPages = 1 + additionalPages;
+
+  // Validate current page on mount and when URL changes
+  useEffect(() => {
+    const page = parseInt(searchParams.get("page") || "1");
+    if (isNaN(page) || page < 1 || page > totalPages) {
+      const errorMessage = `Invalid page number. Please return to the first page.`;
+      setError(errorMessage);
+      onError?.(errorMessage);
+      return;
+    }
+    setError(null);
+    onError?.(null);
+    setCurrentPage(page);
+    onPageChange?.(page);
+  }, [searchParams, totalPages, onError, onPageChange]);
 
   // Calculate start and end indices based on current page
   const getPageIndices = (page: number) => {
@@ -87,8 +110,15 @@ export const Collection = ({ totalNFTs, basePath, onPageChange }: CollectionProp
   const displayedNFTs = allNFTs.slice(start, end);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    onPageChange?.(page);
+    if (page < 1 || page > totalPages) {
+      const errorMessage = `Invalid page number. Please return to the first page.`;
+      setError(errorMessage);
+      onError?.(errorMessage);
+      return;
+    }
+    setError(null);
+    onError?.(null);
+    setSearchParams({ page: page.toString() });
     // Scroll to the collection section
     const collectionElement = document.getElementById('collection');
     if (collectionElement) {
@@ -163,6 +193,10 @@ export const Collection = ({ totalNFTs, basePath, onPageChange }: CollectionProp
     },
     [address, openConnectModal, setIsDialogOpen, writeContractAsync]
   );
+
+  if (error) {
+    return null;
+  }
 
   return (
     <section id="collection" className="py-20">
@@ -245,7 +279,7 @@ export const Collection = ({ totalNFTs, basePath, onPageChange }: CollectionProp
           ))}
         </div>
 
-        {/* Pagination */}
+        {/* Updated Pagination */}
         <div className="mt-12 flex justify-center items-center space-x-2">
           <Button
             variant="outline"
