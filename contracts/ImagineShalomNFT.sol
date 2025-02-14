@@ -4,57 +4,38 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract PeaceHarmonyNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, Ownable {
-    using Counters for Counters.Counter;
-
-    Counters.Counter private _tokenIdCounter;
+contract ImagineShalomNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     uint256 public constant MAX_SUPPLY = 500;
-    uint256 public constant MINT_PRICE = 0.1 ether;
-    string public baseTokenURI;
+    uint256 public constant MINT_PRICE = 0.03 ether;
+    string private _baseTokenURI;
 
     event NFTMinted(address indexed to, uint256 indexed tokenId);
 
-    constructor(string memory _baseTokenURI) ERC721("Peace Harmony NFT", "PEACE") Ownable(msg.sender) {
-        baseTokenURI = _baseTokenURI;
+    constructor(string memory baseURI) ERC721("Imagine Shalom", "SHALOM") Ownable(msg.sender) {
+        _baseTokenURI = baseURI;
     }
 
-    function pause() public onlyOwner {
-        _pause();
-    }
-
-    function unpause() public onlyOwner {
-        _unpause();
-    }
-
-    function setBaseURI(string memory _baseTokenURI) public onlyOwner {
-        baseTokenURI = _baseTokenURI;
-    }
-
-    function mint() public payable {
-        require(!paused(), "Minting is paused");
+    function mint(uint256 tokenId) public payable {
         require(msg.value >= MINT_PRICE, "Insufficient payment");
-        require(_tokenIdCounter.current() < MAX_SUPPLY, "Max supply reached");
-
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+        require(tokenId < MAX_SUPPLY, "Token ID exceeds max supply");
         
-        _safeMint(msg.sender, tokenId);
-        
-        emit NFTMinted(msg.sender, tokenId);
+        // Check if token already exists
+        try this.ownerOf(tokenId) returns (address) {
+            revert("Token already minted");
+        } catch {
+            _safeMint(msg.sender, tokenId);
+            emit NFTMinted(msg.sender, tokenId);
+        }
     }
 
-    function mintBatch(uint256 amount) public payable {
-        require(!paused(), "Minting is paused");
-        require(msg.value >= MINT_PRICE * amount, "Insufficient payment");
-        require(_tokenIdCounter.current() + amount <= MAX_SUPPLY, "Would exceed max supply");
+    function setBaseURI(string memory newBaseURI) public onlyOwner {
+        _baseTokenURI = newBaseURI;
+    }
 
-        for (uint256 i = 0; i < amount; i++) {
-            mint();
-        }
+    function _baseURI() internal view override returns (string memory) {
+        return _baseTokenURI;
     }
 
     function withdraw() public onlyOwner {
@@ -68,7 +49,7 @@ contract PeaceHarmonyNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pa
     // Required overrides
     function _update(address to, uint256 tokenId, address auth)
         internal
-        override(ERC721, ERC721Enumerable, ERC721Pausable)
+        override(ERC721, ERC721Enumerable)
         returns (address)
     {
         return super._update(to, tokenId, auth);
