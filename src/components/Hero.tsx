@@ -32,39 +32,24 @@ export const Hero = ({ collection, currentPage = 1 }: HeroProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start start", "end -50%"],
+    offset: ["start start", "end start"],
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
-  const y = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.8], [1, 0.9]);
+  const y = useTransform(scrollYProgress, [0, 0.8], [0, 50]);
 
   // Only show content on the first page
   if (currentPage !== 1) {
     return null;
   }
 
-  const backgroundNFTs = [
-    {
-      src: "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
-      position: "top-20 -left-10 w-72 h-72 rotate-12",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1438565434616-3ef039228b15",
-      position: "top-40 right-10 w-64 h-64 -rotate-12",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09",
-      position: "bottom-20 left-1/4 w-80 h-80 rotate-6",
-    },
-  ];
-
   return (
     <motion.div
       ref={ref}
       id="hero"
       style={{ opacity, scale, y }}
-      className="relative mt-10 overflow-hidden pt-20"
+      className="relative mt-10 overflow-hidden pt-20 min-h-[100vh] md:min-h-0"
     >
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
