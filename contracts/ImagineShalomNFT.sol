@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract ImagineShalomNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     uint256 public constant MAX_SUPPLY = 500;
     uint256 public constant MINT_PRICE = 0.03 ether;
-    string private constant BASE_URI = "https://gateway.lighthouse.storage/ipfs/bafybeicnm2glhu3ndesihp7b3w32mnoh5hwp53szgac4jz3hkxfonelzou/ImagineShalomNFT/";
+    string private constant BASE_URI = "https://gateway.lighthouse.storage/ipfs/bafybeiha2abpfkix2cytxw4x3t2yoywic5p6446d4n7jzut6yh65qtab6a/ImagineShalomNFT/";
 
     event NFTMinted(address indexed to, uint256 indexed tokenId);
 
