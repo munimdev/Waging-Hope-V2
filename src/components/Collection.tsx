@@ -44,20 +44,6 @@ const generateNFTs = (total: number, basePath: string) =>
     price: "0.03 ETH",
   }));
 
-const nftAddress = {
-  shalom: "0x0000000000000000000000000000000000000000",
-  phoenix: "0x0000000000000000000000000000000000000000",
-} as const;
-
-const nftABI = [
-  {
-    name: "mint",
-    type: "function",
-    stateMutability: "payable",
-    inputs: [{ name: "tokenId", type: "uint256" }],
-    outputs: [],
-  },
-] as const;
 
 export const Collection = ({
   totalNFTs,

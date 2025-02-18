@@ -51,7 +51,7 @@ def main():
         "https://gateway.lighthouse.storage/ipfs/bafybeiga72cxu2rjbdxfscpg5dwehvri3udr2c5viucecfuaj36nlydkae/X.jpg",
         base_dir,
         SHALOM_DESCRIPTION,
-        "https://peace-harmony-nft-galleria.vercel.app/shalom"
+        "https://waginghope.com/imagine"
     )
 
     # Generate LA Phoenix metadata
@@ -61,7 +61,7 @@ def main():
         "https://gateway.lighthouse.storage/ipfs/bafybeiem5ayp2inpytrydjnzfbq6eg2bmq324p3tjs2iktflgjjasn5z5u/X.jpg",
         base_dir,
         PHOENIX_DESCRIPTION,
-        "https://peace-harmony-nft-galleria.vercel.app/phoenix"
+        "https://waginghope.com/la"
     )
 
     # Generate collection-level metadata
@@ -72,7 +72,7 @@ def main():
             "image": "https://gateway.lighthouse.storage/ipfs/bafybeiga72cxu2rjbdxfscpg5dwehvri3udr2c5viucecfuaj36nlydkae/1.jpg",
             "external_link": "https://peace-harmony-nft-galleria.vercel.app/shalom",
             "seller_fee_basis_points": 250,  # 2.5% royalty
-            "fee_recipient": "0x8eaFc3Aab073CC4CC188120D1a32c48C0147b88d"  # Address that will receive royalties
+            "fee_recipient": "0x5f3cbAbdBf80b00c564C20298A190fA6868B374a"  # Address that will receive royalties
         },
         "LAPhoenixNFT": {
             "name": "LA Phoenix",
@@ -80,7 +80,7 @@ def main():
             "image": "https://gateway.lighthouse.storage/ipfs/bafybeiem5ayp2inpytrydjnzfbq6eg2bmq324p3tjs2iktflgjjasn5z5u/1.jpg",
             "external_link": "https://peace-harmony-nft-galleria.vercel.app/phoenix",
             "seller_fee_basis_points": 250,  # 2.5% royalty
-            "fee_recipient": "0x9A82eE68A31c5567cec7E0F0E5e3FD49f7F4f27B"  # Address that will receive royalties
+            "fee_recipient": "0x5f3cbAbdBf80b00c564C20298A190fA6868B374a"  # Address that will receive royalties
         }
     }
 

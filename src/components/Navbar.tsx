@@ -4,7 +4,7 @@ import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 
 export const Navbar = ({ collection }: { collection: string }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,6 +12,8 @@ export const Navbar = ({ collection }: { collection: string }) => {
   const [activeSection, setActiveSection] = useState("hero");
   const { isConnected } = useAccount();
   const [headerName, setHeaderName] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (collection === "imagine") {
@@ -67,27 +69,30 @@ export const Navbar = ({ collection }: { collection: string }) => {
     const section = document.getElementById(sectionId);
     if (!section) return;
 
-    const navHeight = 80; // Height of fixed navbar
+    const navHeight = 80;
     const sectionTop = section.offsetTop;
     const targetPosition = sectionTop - navHeight;
 
-    // First set the active section
     setActiveSection(sectionId);
-
-    // Then scroll with a slight delay to ensure smooth transition
     window.scrollTo({
       top: targetPosition,
       behavior: "smooth",
     });
-
-    // Update active section again after scroll completes
-    setTimeout(() => {
-      setActiveSection(sectionId);
-    }, 100);
   };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    
+    // Get current page
+    const currentPage = searchParams.get("page");
+    
+    // If we're not on page 1, navigate to page 1
+    if (currentPage && currentPage !== "1") {
+      window.location.href = `/${collection}?page=1`;
+      return;
+    }
+    
+    // If already on page 1, scroll to section
     const sectionId = href.replace("#", "");
     scrollToSection(sectionId);
     setIsMenuOpen(false);
