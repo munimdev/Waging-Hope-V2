@@ -5,37 +5,33 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract LAPhoenixNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     uint256 public constant MAX_SUPPLY = 800;
     uint256 public constant MINT_PRICE = 0.03 ether;
-    string private _baseTokenURI;
+    string private constant BASE_URI = "https://gateway.lighthouse.storage/ipfs/bafybeicnm2glhu3ndesihp7b3w32mnoh5hwp53szgac4jz3hkxfonelzou/LAPhoenixNFT/";
 
     event NFTMinted(address indexed to, uint256 indexed tokenId);
 
-    constructor(string memory baseURI) ERC721("LA Phoenix", "PHOENIX") Ownable(msg.sender) {
-        _baseTokenURI = baseURI;
-    }
+    constructor() ERC721("LA Phoenix", "PHOENIX") Ownable(msg.sender) {}
 
     function mint(uint256 tokenId) public payable {
         require(msg.value >= MINT_PRICE, "Insufficient payment");
-        require(tokenId < MAX_SUPPLY, "Token ID exceeds max supply");
+        require(tokenId > 0 && tokenId <= MAX_SUPPLY, "Invalid token ID");
         
         // Check if token already exists
         try this.ownerOf(tokenId) returns (address) {
             revert("Token already minted");
         } catch {
             _safeMint(msg.sender, tokenId);
+            _setTokenURI(tokenId, string(abi.encodePacked(Strings.toString(tokenId), ".json")));
             emit NFTMinted(msg.sender, tokenId);
         }
     }
 
-    function setBaseURI(string memory newBaseURI) public onlyOwner {
-        _baseTokenURI = newBaseURI;
-    }
-
-    function _baseURI() internal view override returns (string memory) {
-        return _baseTokenURI;
+    function _baseURI() internal pure override returns (string memory) {
+        return BASE_URI;
     }
 
     function withdraw() public onlyOwner {

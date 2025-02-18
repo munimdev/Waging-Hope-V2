@@ -15,14 +15,20 @@ import {
 } from "./ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { toast } from "sonner";
-import { nftContract, publicClient, transportUrl } from "@/config";
-import { activeChain } from "@/config";
+import {
+  shalomNFTContract,
+  phoenixNFTContract,
+  publicClient,
+  transportUrl,
+  activeChain,
+} from "@/config";
 import { mint } from "viem/chains";
 import { simulateContract } from "viem/actions";
 
 interface CollectionProps {
   totalNFTs: number;
   basePath: string;
+  collectionType: "shalom" | "phoenix";
   onPageChange?: (page: number) => void;
   onError?: (error: string | null) => void;
 }
@@ -53,7 +59,13 @@ const nftABI = [
   },
 ] as const;
 
-export const Collection = ({ totalNFTs, basePath, onPageChange, onError }: CollectionProps) => {
+export const Collection = ({
+  totalNFTs,
+  basePath,
+  collectionType,
+  onPageChange,
+  onError,
+}: CollectionProps) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { openConnectModal } = useConnectModal();
@@ -61,7 +73,11 @@ export const Collection = ({ totalNFTs, basePath, onPageChange, onError }: Colle
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: hash, error: mintError, writeContractAsync } = useWriteContract();
+  const {
+    data: hash,
+    error: mintError,
+    writeContractAsync,
+  } = useWriteContract();
   const { address, isConnected } = useAccount();
 
   // Get page from URL or default to 1
@@ -69,7 +85,7 @@ export const Collection = ({ totalNFTs, basePath, onPageChange, onError }: Colle
   const [currentPage, setCurrentPage] = useState(urlPage);
 
   const allNFTs = generateNFTs(totalNFTs, basePath);
-  
+
   // Calculate total pages based on different items per page
   const remainingNFTs = totalNFTs - FIRST_PAGE_ITEMS;
   const additionalPages = Math.ceil(remainingNFTs / OTHER_PAGES_ITEMS);
@@ -98,7 +114,8 @@ export const Collection = ({ totalNFTs, basePath, onPageChange, onError }: Colle
         end: FIRST_PAGE_ITEMS,
       };
     } else {
-      const itemsAfterFirstPage = (page - 2) * OTHER_PAGES_ITEMS + FIRST_PAGE_ITEMS;
+      const itemsAfterFirstPage =
+        (page - 2) * OTHER_PAGES_ITEMS + FIRST_PAGE_ITEMS;
       return {
         start: itemsAfterFirstPage,
         end: Math.min(itemsAfterFirstPage + OTHER_PAGES_ITEMS, totalNFTs),
@@ -118,11 +135,37 @@ export const Collection = ({ totalNFTs, basePath, onPageChange, onError }: Colle
     }
     setError(null);
     onError?.(null);
+
+    // Update URL params first
     setSearchParams({ page: page.toString() });
-    // Scroll to the collection section
-    const collectionElement = document.getElementById('collection');
-    if (collectionElement) {
-      collectionElement.scrollIntoView({ behavior: 'smooth' });
+
+    // If we're on page 1, do a two-step scroll
+    if (currentPage === 1) {
+      // First scroll to top smoothly
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
+      // Then after a short delay, scroll to collection
+      setTimeout(() => {
+        const collectionElement = document.getElementById("collection");
+        if (collectionElement) {
+          collectionElement.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 300); // Adjust this delay if needed
+    } else {
+      // For other pages, just scroll smoothly to collection
+      const collectionElement = document.getElementById("collection");
+      if (collectionElement) {
+        collectionElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
     }
   };
 
@@ -148,20 +191,23 @@ export const Collection = ({ totalNFTs, basePath, onPageChange, onError }: Colle
     }
   };
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (isDialogOpen) {
-      if (e.key === 'ArrowLeft') {
-        handlePrevNFT();
-      } else if (e.key === 'ArrowRight') {
-        handleNextNFT();
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (isDialogOpen) {
+        if (e.key === "ArrowLeft") {
+          handlePrevNFT();
+        } else if (e.key === "ArrowRight") {
+          handleNextNFT();
+        }
       }
-    }
-  }, [isDialogOpen, selectedNFT]);
+    },
+    [isDialogOpen, selectedNFT]
+  );
 
   // Add keyboard navigation
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
   const handleConnectOrMint = useCallback(
@@ -175,23 +221,31 @@ export const Collection = ({ totalNFTs, basePath, onPageChange, onError }: Colle
       }
 
       try {
+        const contract =
+          collectionType === "shalom" ? shalomNFTContract : phoenixNFTContract;
         const request = {
-          ...nftContract,
-          functionName: "buyNFT",
-          args: [BigInt(id), true] as const,
+          ...contract,
+          functionName: "mint",
+          args: [BigInt(id)],
           value: parseEther("0.03"),
           chain: activeChain,
           account: address,
         } as const;
 
         await writeContractAsync(request);
-        toast.success("NFT minted successfully!");
+        toast.success(`NFT #${id} minted successfully!`);
       } catch (error) {
         console.error("Minting failed:", error);
         toast.error("Failed to mint NFT");
       }
     },
-    [address, openConnectModal, setIsDialogOpen, writeContractAsync]
+    [
+      address,
+      openConnectModal,
+      setIsDialogOpen,
+      writeContractAsync,
+      collectionType,
+    ]
   );
 
   if (error) {

@@ -3,16 +3,20 @@ import { Chain, mainnet, sepolia } from "viem/chains";
 import { abi } from "@/abi/abi";
 
 export const activeChain: Chain = sepolia;
-export const contractAddressNFT: Address =
-  "0x8eaFc3Aab073CC4CC188120D1a32c48C0147b88d";
 
-export const nftContract = {
-  address: contractAddressNFT,
+// Shalom NFT Contract
+export const shalomNFTAddress: Address = "0x8eaFc3Aab073CC4CC188120D1a32c48C0147b88d";
+export const shalomNFTContract = {
+  address: shalomNFTAddress,
   abi: abi,
 } as const;
 
-export const contractAddressToken: Address =
-  "0x8f9d888e96A969eed16Ea151AAa50f41371F98B3";
+// Phoenix NFT Contract
+export const phoenixNFTAddress: Address = "0x9A82eE68A31c5567cec7E0F0E5e3FD49f7F4f27B";
+export const phoenixNFTContract = {
+  address: phoenixNFTAddress,
+  abi: abi,
+} as const;
 
 export const transportUrl: string =
   activeChain.id === mainnet.id
