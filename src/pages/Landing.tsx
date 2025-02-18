@@ -35,7 +35,7 @@ const Landing = () => {
                     alt={collection.title}
                     className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                     <h2 className="text-3xl md:text-4xl font-bold text-white">
                       {collection.title}
                     </h2>
