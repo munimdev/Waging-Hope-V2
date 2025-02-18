@@ -1,15 +1,16 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import { darkTheme, getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { http, WagmiProvider } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { arbitrumSepolia, mainnet } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { activeChain, transportUrl } from "@/config";
 
 const config = getDefaultConfig({
-  appName: "Salam Shalom",
+  appName: "Waging Hope Collective",
   projectId: "cd12f245bd6a6075580e043613be3a13", // Get from WalletConnect
-  chains: [mainnet],
+  chains: [mainnet, arbitrumSepolia],
   transports: {
-    [mainnet.id]: http(),
+    [activeChain.id]: http(transportUrl),
   },
 });
 

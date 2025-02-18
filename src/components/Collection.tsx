@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useAccount, useWriteContract } from "wagmi";
-import { createPublicClient, formatEther, parseEther, http } from "viem";
+import { useAccount, useWriteContract, useWatchContractEvent } from "wagmi";
+import { createPublicClient, formatEther, parseEther, http, parseAbiItem, decodeEventLog } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
@@ -24,6 +24,7 @@ import {
 } from "@/config";
 import { mint } from "viem/chains";
 import { simulateContract } from "viem/actions";
+import { BaseError, ContractFunctionRevertedError } from "viem";
 
 interface CollectionProps {
   totalNFTs: number;
@@ -33,8 +34,13 @@ interface CollectionProps {
   onError?: (error: string | null) => void;
 }
 
+interface MintState {
+  idsMinted: number[];
+}
+
 const FIRST_PAGE_ITEMS = 15;
 const OTHER_PAGES_ITEMS = 20;
+const mintPrice = parseEther("0.03");
 
 const generateNFTs = (total: number, basePath: string) =>
   Array.from({ length: total }, (_, i) => ({
@@ -58,6 +64,9 @@ export const Collection = ({
   const [selectedNFT, setSelectedNFT] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mintState, setMintState] = useState<MintState>({
+    idsMinted: [],
+  });
 
   const {
     data: hash,
@@ -207,22 +216,64 @@ export const Collection = ({
       }
 
       try {
-        const contract =
-          collectionType === "shalom" ? shalomNFTContract : phoenixNFTContract;
+        // Check if user is on the right chain
+        const chainId = await publicClient.getChainId();
+        if (chainId !== activeChain.id) {
+          toast.error(`Please switch to the ${activeChain.name} chain`);
+          return;
+        }
+
+        // Get user's balance and check if sufficient
+        const balance = await publicClient.getBalance({ address });        
+        if (balance < mintPrice) {
+          toast.error("Insufficient balance for minting");
+          return;
+        }
+
+        // Estimate gas for the transaction
+        const contract = collectionType === "shalom" ? shalomNFTContract : phoenixNFTContract;
         const request = {
           ...contract,
           functionName: "mint",
           args: [BigInt(id)],
-          value: parseEther("0.03"),
-          chain: activeChain,
+          value: mintPrice,
           account: address,
+          chain: activeChain,
         } as const;
 
-        await writeContractAsync(request);
-        toast.success(`NFT #${id} minted successfully!`);
+        // Simulate the transaction first
+        const { request: simulatedRequest } = await simulateContract(publicClient, {
+          ...request,
+        });
+
+        // If simulation succeeds, proceed with actual mint
+        toast.loading(`Minting NFT #${id}...`);
+        const tx = await writeContractAsync(simulatedRequest);
+        
+        // Wait for transaction confirmation
+        await publicClient.waitForTransactionReceipt({ hash: tx });
+        
+        // Manually update minted IDs
+        setMintState(prev => ({
+          idsMinted: [...new Set([...prev.idsMinted, id])]
+        }));
+
+        toast.success(`Successfully minted NFT #${id}!`);
+
       } catch (error) {
         console.error("Minting failed:", error);
-        toast.error("Failed to mint NFT");
+        if (error instanceof BaseError) {
+          const revertError = error.walk(
+            (err) => err instanceof ContractFunctionRevertedError
+          );
+          if (revertError instanceof ContractFunctionRevertedError) {
+            toast.error(`Minting failed: ${revertError.data?.args?.[0] || 'Unknown error'}`);
+          } else {
+            toast.error("Failed to mint NFT");
+          }
+        } else {
+          toast.error("Failed to mint NFT");
+        }
       }
     },
     [
@@ -233,6 +284,65 @@ export const Collection = ({
       collectionType,
     ]
   );
+
+  // Watch for NFT minting events
+  useWatchContractEvent({
+    address: collectionType === "shalom" ? shalomNFTContract.address : phoenixNFTContract.address,
+    abi: collectionType === "shalom" ? shalomNFTContract.abi : phoenixNFTContract.abi,
+    eventName: "NFTMinted",
+    onLogs(logs) {
+      console.log("NFT minted event:", logs);
+      setMintState((prev) => {
+        const newTokenIds = logs.map((log) => Number(log.args.tokenId));
+        const idsMintedSet = new Set([...prev.idsMinted, ...newTokenIds]);
+        return {
+          idsMinted: Array.from(idsMintedSet),
+        };
+      });
+    },
+  });
+
+  // Fetch past minted events on component mount
+  useEffect(() => {
+    const fetchMintedNFTs = async () => {
+      try {
+        const contract = collectionType === "shalom" ? shalomNFTContract : phoenixNFTContract;
+        const eventFilter = parseAbiItem("event NFTMinted(address indexed to, uint256 indexed tokenId)");
+
+        const logs = await publicClient.getLogs({
+          address: contract.address,
+          event: eventFilter,
+          fromBlock: 0n,
+          toBlock: 'latest'
+        });
+
+        const mintedIds = logs.map(log => {
+          const decodedLog = decodeEventLog({
+            abi: contract.abi,
+            data: log.data,
+            topics: log.topics,
+          }) as { args: { tokenId: bigint } };
+          return Number(decodedLog.args.tokenId);
+        });
+
+        setMintState(prev => ({
+          idsMinted: [...new Set([...prev.idsMinted, ...mintedIds])]
+        }));
+      } catch (error) {
+        console.error("Error fetching minted NFTs:", error);
+      }
+    };
+
+    fetchMintedNFTs();
+  }, [collectionType]);
+
+  // Update the button text based on mint state
+  const getMintButtonText = (nftId: number) => {
+    if (mintState.idsMinted.includes(nftId)) {
+      return "Already Minted";
+    }
+    return `Mint for ${formatEther(mintPrice)} ETH`;
+  };
 
   if (error) {
     return null;
@@ -308,8 +418,9 @@ export const Collection = ({
                     <Button
                       onClick={() => handleConnectOrMint(selectedNFT || nft.id)}
                       className="px-8"
+                      disabled={mintState.idsMinted.includes(nft.id)}
                     >
-                      {!address ? "Connect Wallet" : `Mint for ${nft.price}`}
+                      {!address ? "Connect Wallet" : getMintButtonText(nft.id)}
                     </Button>
                     <div className="w-[100px]" /> {/* Spacer for alignment */}
                   </div>
