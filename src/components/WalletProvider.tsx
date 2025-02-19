@@ -10,7 +10,7 @@ const config = getDefaultConfig({
   chains: [mainnet, arbitrumSepolia],
   transports: {
     [mainnet.id]: http("https://eth-mainnet.g.alchemy.com/v2/C_avEIbU5Y2Ay7eM-HzzJFzxO3QWvHLQ"),
-    [arbitrumSepolia.id]: http("https://arb-sepolia.g.alchemy.com/v2/3d896hhwwnUzPur_UQurCLuHyURxxVT7"),
+    // [arbitrumSepolia.id]: http("https://arb-sepolia.g.alchemy.com/v2/3d896hhwwnUzPur_UQurCLuHyURxxVT7"),
   },
 });
 
