@@ -40,6 +40,7 @@ const LA = () => {
       <Collection 
         totalNFTs={800}
         basePath="/la"
+        collectionType="phoenix"
         onPageChange={setCurrentPage}
         onError={setError}
       />

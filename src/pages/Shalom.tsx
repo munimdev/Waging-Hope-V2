@@ -40,6 +40,7 @@ const Imagine = () => {
       <Collection 
         totalNFTs={500}
         basePath="/imagine"
+        collectionType="shalom"
         onPageChange={setCurrentPage}
         onError={setError}
       />
