@@ -247,18 +247,24 @@ export const Collection = ({
         });
 
         // If simulation succeeds, proceed with actual mint
-        toast.loading(`Minting NFT #${id}...`);
-        const tx = await writeContractAsync(simulatedRequest);
-        
-        // Wait for transaction confirmation
-        await publicClient.waitForTransactionReceipt({ hash: tx });
-        
-        // Manually update minted IDs
-        setMintState(prev => ({
-          idsMinted: [...new Set([...prev.idsMinted, id])]
-        }));
+        const loadingToastId = toast.loading(`Minting NFT #${id}...`);
+        try {
+          const tx = await writeContractAsync(simulatedRequest);
+          
+          // Wait for transaction confirmation
+          await publicClient.waitForTransactionReceipt({ hash: tx });
+          
+          // Manually update minted IDs
+          setMintState(prev => ({
+            idsMinted: [...new Set([...prev.idsMinted, id])]
+          }));
 
-        toast.success(`Successfully minted NFT #${id}!`);
+          toast.dismiss(loadingToastId);
+          toast.success(`Successfully minted NFT #${id}!`);
+        } catch (error) {
+          toast.dismiss(loadingToastId);
+          throw error; // Re-throw to be caught by outer catch block
+        }
 
       } catch (error) {
         console.error("Minting failed:", error);
