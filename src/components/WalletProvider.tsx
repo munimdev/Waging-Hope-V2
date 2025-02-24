@@ -7,7 +7,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 const config = getDefaultConfig({
   appName: "Waging Hope Collective",
   projectId: "cd12f245bd6a6075580e043613be3a13", // Get from WalletConnect
-  chains: [mainnet, arbitrumSepolia],
+  chains: [mainnet],
   transports: {
     [mainnet.id]: http("https://eth-mainnet.g.alchemy.com/v2/C_avEIbU5Y2Ay7eM-HzzJFzxO3QWvHLQ"),
     // [arbitrumSepolia.id]: http("https://arb-sepolia.g.alchemy.com/v2/3d896hhwwnUzPur_UQurCLuHyURxxVT7"),

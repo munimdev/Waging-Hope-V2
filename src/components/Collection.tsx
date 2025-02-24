@@ -347,7 +347,7 @@ export const Collection = ({
     if (mintState.idsMinted.includes(nftId)) {
       return "Already Minted";
     }
-    return `Mint for ${formatEther(mintPrice)} ETH`;
+    return !address ? "Connect Wallet" : `Mint for ${formatEther(mintPrice)} ETH`;
   };
 
   if (error) {
@@ -424,9 +424,9 @@ export const Collection = ({
                     <Button
                       onClick={() => handleConnectOrMint(selectedNFT || nft.id)}
                       className="px-8"
-                      disabled={mintState.idsMinted.includes(nft.id)}
+                      disabled={mintState.idsMinted.includes(selectedNFT || nft.id)}
                     >
-                      {!address ? "Connect Wallet" : getMintButtonText(nft.id)}
+                      {getMintButtonText(selectedNFT || nft.id)}
                     </Button>
                     <div className="w-[100px]" /> {/* Spacer for alignment */}
                   </div>
